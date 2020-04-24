@@ -27,18 +27,38 @@
  </tile>
  <tile id="8">
   <image width="98" height="98" source="images/rock.png"/>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="8.68361" y="47.3672" width="80" height="40">
+    <ellipse/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="9">
   <image width="32" height="32" source="images/strawberry.png"/>
  </tile>
  <tile id="10">
   <image width="98" height="107" source="images/tree_short.png"/>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="16.784" y="58.2505" width="64.5033" height="37.1881">
+    <ellipse/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="11">
   <image width="100" height="136" source="images/tree_tall.png"/>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="19.0877" y="92.8058" width="64.1742" height="33.239">
+    <ellipse/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="12">
   <image width="101" height="115" source="images/tree_ugly.png"/>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="10.8603" y="56.2759" width="80" height="40">
+    <ellipse/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="13">
   <image width="32" height="32" source="images/watermelon.png"/>

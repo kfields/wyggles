@@ -12,17 +12,13 @@ class Sprite(arcade.Sprite):
         self.dna = dna
         self.kind = self.__class__.__name__
         self.layer = layer
+        self.brain = None
         self.body = None
         self.beacon = None
         self.heading = 0
         self.x = 0
         self.y = 0
         self.z = 0
-        #
-        self.fromX = 0
-        self.fromY = 0
-        self.toX = 0
-        self.toY = 0    
         #
         self.halfWidth = 0
         self.halfHeight = 0
@@ -38,6 +34,8 @@ class Sprite(arcade.Sprite):
         layer.add_sprite(self)
 
     def on_update(self, delta_time: float = 1/60):
+        if self.brain:
+            self.brain.update(delta_time)
         if self.body:
             self.x = self.body.position.x
             self.y = self.body.position.y
@@ -51,12 +49,6 @@ class Sprite(arcade.Sprite):
         self.imgSrc = filename
         self.texture = arcade.load_texture(filename)
         
-    def move_to(self, x, y):
-        self.fromX = self.x
-        self.fromY = self.y
-        self.toX = x
-        self.toY = y                
-
     def set_pos(self, x, y):
         self._set_pos(x,y)
         if(self.body != None):
@@ -138,15 +130,6 @@ class Sprite(arcade.Sprite):
             self.heading = angle-360
         else:
             self.heading = angle
-
-    def project(self, distance):
-        px = self.x+(distance*(math.cos(self.heading*degRads)))
-        py = self.y+(distance*(math.sin(self.heading*degRads)))
-        self.move_to(px, py) ;
-
-    def at_goal(self):
-        bDistance = distance2d(self.x, self.y, self.toX, self.toY)
-        return bDistance < 5
     
     def move(self):
         pass

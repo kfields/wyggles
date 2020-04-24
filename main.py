@@ -9,8 +9,7 @@ from wyggles.assets import asset
 from wyggles.engine import *
 from wyggles.wyggle import Wyggle
 from wyggles.ball import Ball
-#from wyggles.apple import Apple
-from wyggles.fruit import Apple, FruitFactory
+from wyggles.fruit import FruitFactory
 
 
 COLUMNS = 20
@@ -61,6 +60,15 @@ def spawnFruit(layer):
     fruitFactory = FruitFactory(layer)
     fruit = fruitFactory.create_random()
     materializeRandomFromCenter(fruit)
+
+def spawnObstacle(sprite):
+    body = pymunk.Body(body_type=pymunk.Body.STATIC)
+    body.position = sprite.position
+    shape = pymunk.Poly(body, sprite.hit_box)
+    shape.elasticity = .5
+    shape.friction = .9
+    sprite_engine.space.add(shape)
+    #layer.append(shape)
 
 #Walls
 def spawnWall(layer, x, y, w, z):
@@ -114,10 +122,21 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
         self.layers = []
         self.respawning_food = False
-
+        BG_WIDTH = 128
+        BG_HEIGHT = 128
+        '''
+        #self.background = arcade.load_texture(asset('grass.png'))
+        bg_path = ":resources:images/tiles/grassCenter.png"
+        #bg_path = asset('grass.png')
+        self.background = arcade.Sprite(bg_path, TILE_SCALING,
+                                         repeat_count_x=width/BG_WIDTH, repeat_count_y=height/BG_HEIGHT)
+        self.background.position = (width/2, height/2)
+        self.background.width = width
+        self.background.height = height
+        '''
         my_map = arcade.tilemap.read_tmx(asset('level1.tmx'))
 
-        self.layers.append(arcade.tilemap.process_layer(my_map, 'landscape', TILE_SCALING))
+        self.layers.append(arcade.tilemap.process_layer(my_map, 'ground', TILE_SCALING))
 
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
@@ -128,16 +147,25 @@ class MyGame(arcade.Window):
         self.space = sprite_engine.space
 
         self.wyggle_layer = Layer('wyggles')
+        self.layers.append(self.wyggle_layer)
         spawnWyggles(self.wyggle_layer)
 
         self.ball_layer = Layer('balls')
+        self.layers.append(self.ball_layer)
         spawnBalls(self.ball_layer)
 
         self.food_layer = Layer('food')
+        self.layers.append(self.food_layer)
         spawnFood(self.food_layer)
+
+        self.landscape_layer = landscape_layer = arcade.tilemap.process_layer(my_map, 'landscape', TILE_SCALING)
+        self.layers.append(landscape_layer)
+        for sprite in landscape_layer:
+            spawnObstacle(sprite)
 
         # Lists of sprites or lines
         self.sprite_list = Layer('walls')
+        self.layers.append(self.sprite_list)
         self.static_lines = []
 
         # Used for dragging shapes around with the mouse
@@ -160,21 +188,21 @@ class MyGame(arcade.Window):
         # Start timing how long this takes
         draw_start_time = timeit.default_timer()
 
+        # Draw the background
+        #(left, right, bottom, top) = viewport = arcade.get_viewport()
+        #arcade.draw_lrwh_rectangle_textured(left, bottom, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+        #self.background.draw()
+
         # Draw all the sprites
         for layer in self.layers:
             layer.draw()
 
-        self.ball_layer.draw()
-        self.food_layer.draw()
-        self.sprite_list.draw()
-        self.wyggle_layer.draw()
-
         # Display timings
         output = f"Processing time: {self.processing_time:.3f}"
-        arcade.draw_text(output, 20, SCREEN_HEIGHT - 20, arcade.color.WHITE, 12)
+        arcade.draw_text(output, 20, SCREEN_HEIGHT - 20, arcade.color.BLACK, 12)
 
         output = f"Drawing time: {self.draw_time:.3f}"
-        arcade.draw_text(output, 20, SCREEN_HEIGHT - 40, arcade.color.WHITE, 12)
+        arcade.draw_text(output, 20, SCREEN_HEIGHT - 40, arcade.color.BLACK, 12)
 
         self.draw_time = timeit.default_timer() - draw_start_time
 

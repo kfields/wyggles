@@ -11,7 +11,7 @@ class Box(Sprite):
         self.setSize(64,64)      
         self.type = 'box'
         self.name = sprite_engine.gen_id(self.type)                
-        self.load_texture(self.type)
+        self.load_texture('images/box')
         #
         self.body = BoxBody(self)
         self.body.setSize(64,64,1000)

@@ -1,7 +1,8 @@
 import os
 import zipfile
 
-assets_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../assets')
+#assets_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../assets')
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../assets'))
 #assets_dir = None
 # print(assets_dir)
 
