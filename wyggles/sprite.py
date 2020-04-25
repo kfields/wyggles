@@ -16,33 +16,43 @@ class Sprite(arcade.Sprite):
         self.body = None
         self.beacon = None
         self.heading = 0
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        #
-        self.halfWidth = 0
-        self.halfHeight = 0
-        self.min_x = 0
-        self.min_y = 0
-        self.max_x = 0
-        self.max_y = 0        
+        self._z = 0
         #
         self.energy = 5
         #
-        self.octant = (math.pi*2)/8
-        #                
         layer.add_sprite(self)
+
+    @property
+    def x(self):
+        return self.center_x
+
+    @x.setter
+    def x(self, val):
+        self.center_x = val
+
+    @property
+    def y(self):
+        return self.center_y
+
+    @y.setter
+    def y(self, val):
+        self.center_y = val
+
+    @property
+    def z(self):
+        return self._z
+
+    @z.setter
+    def z(self, val):
+        self._z = val
+        self.layer.depth_sort()
 
     def on_update(self, delta_time: float = 1/60):
         if self.brain:
             self.brain.update(delta_time)
         if self.body:
-            self.x = self.body.position.x
-            self.y = self.body.position.y
+            self.position = self.body.position
             self.angle = math.degrees(self.body.angle)
-
-        self.position = [self.x, self.y]
-
 
     def load_texture(self, imgName):
         filename = 'assets/' + imgName + ".png"
@@ -50,24 +60,9 @@ class Sprite(arcade.Sprite):
         self.texture = arcade.load_texture(filename)
         
     def set_pos(self, x, y):
-        self._set_pos(x,y)
+        self.position = (x,y)
         if(self.body != None):
             self.body.position = x, y
-
-    def _set_pos(self, x, y):
-        self.x = x
-        self.y = y
-        #
-        self.validate()
-
-    def validate(self):
-        self._validate()
-
-    def _validate(self):
-        self.min_x = self.x - self.halfWidth
-        self.min_y = self.y - self.halfHeight
-        self.max_x = self.x + self.halfWidth
-        self.max_y = self.y + self.halfHeight
 
     def set_origin(self, x, y):
         self.set_pos(x, y)
@@ -76,31 +71,14 @@ class Sprite(arcade.Sprite):
         self.toX = x
         self.toY = y        
 
-    def setZ(self, z):
-        self.z = z
-        self.layer.depth_sort()
-
-    def getZ(self):
-        return self.z
-
-    def getX(self):
-        return self.x
-
-    def getY(self):
-        return self.y
-
-    def setSize(self, width, height):
-        self.halfWidth = width / 2
-        self.halfHeight = height / 2
-
     def intersects(self, sprite):
-        if(self.min_x > sprite.max_x):
+        if(self.left > sprite.right):
             return False
-        if(self.min_y > sprite.max_y):
+        if(self.bottom > sprite.top):
             return False
-        if(sprite.min_x > self.max_x):
+        if(sprite.left > self.right):
             return False
-        if(sprite.min_y > self.max_y):
+        if(sprite.bottom > self.top):
             return False        
         return True
 
@@ -113,20 +91,6 @@ class Sprite(arcade.Sprite):
     def materialize_at(self, x, y):
         self.set_origin(x, y)
         self.show()
-
-    def turn_left(self, angleDelta):
-        angle = self.heading - angleDelta
-        if(angle < 0):
-            self.heading = 360+angle
-        else:
-            self.heading = angle
-
-    def turn_right(self, angleDelta):
-        angle = self.heading + angleDelta
-        if(angle > 359):
-            self.heading = angle-360
-        else:
-            self.heading = angle
     
     def move(self):
         pass

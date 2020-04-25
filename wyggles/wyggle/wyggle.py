@@ -19,7 +19,6 @@ class WyggleSeg(Sprite):
     def __init__(self, layer, dna):
         super().__init__(layer)
         self.dna = dna
-        self.setSize(32,32)
         self.next = None
         self.track_ndx = 0
         #self.track_max = 132
@@ -132,8 +131,8 @@ class Wyggle(WyggleHead):
         self.segs.append(seg)
         length = len(self.segs)
         self.length = length
-        #seg.setZ(-length)
-        seg.setZ(-.001 * length)
+        #seg.z = -length
+        seg.z = -.001 * length
         
         was_butt = self.butt
         self.butt = seg

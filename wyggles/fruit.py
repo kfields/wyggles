@@ -56,7 +56,6 @@ class Fruit(Sprite):
     def __init__(self, layer, dna):
         super().__init__(layer, dna)
         self.type = dna.kind
-        self.setSize(32, 32)
         self.energy = 5
         self.beacon = Beacon(self, self.type)
         sprite_engine.addBeacon(self.beacon)

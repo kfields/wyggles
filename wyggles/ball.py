@@ -9,7 +9,6 @@ from wyggles.beacon import *
 class Ball(Sprite):
     def __init__(self, layer):
         super().__init__(layer)
-        self.setSize(32,32)
         self.type = 'ball'
         self.name = sprite_engine.gen_id(self.type)
         self.load_texture('images/ball')

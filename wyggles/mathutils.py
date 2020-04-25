@@ -3,6 +3,7 @@ import math
 floatMax = 1E400
 
 degRads = (math.pi*2)/360
+octant = (math.pi*2)/8
 
 def distance2d(start, end):
     diffX = start[0] - end[0]

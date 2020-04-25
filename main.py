@@ -23,8 +23,8 @@ TILE_SCALING = 1
 
 #SCREEN_WIDTH = int(COLUMNS * TILE_WIDTH * TILE_SCALING)
 #SCREEN_HEIGHT = int(ROWS * TILE_HEIGHT * TILE_SCALING)
-SCREEN_WIDTH = world_max_x
-SCREEN_HEIGHT = world_max_y
+SCREEN_WIDTH = world_right
+SCREEN_HEIGHT = world_top
 SCREEN_TITLE = "Wyggles"
 
 WYGGLE_COUNT = 3
@@ -42,7 +42,7 @@ def spawnWyggles(layer):
 #Balls
 def spawnBall(layer):
     ball = Ball(layer)
-    ball.materialize_at(random.random() * (world_max_x - 100), random.random() * (world_max_y - 100))
+    ball.materialize_at(random.random() * (world_right - 100), random.random() * (world_top - 100))
 
 def spawnBalls(layer):
     i = 0
@@ -82,19 +82,19 @@ def spawnWall(layer, x, y, w, z):
     #layer.append(shape)
 
 def spawnWalls(layer):
-    min_x = world_min_x 
-    min_x = world_min_y 
-    max_x = world_max_x 
-    max_y = world_max_y
+    left = world_left 
+    left = world_bottom 
+    right = world_right 
+    top = world_top
     thickness = 200
     #North Wall
-    spawnWall(layer, min_x-thickness, min_x-thickness, max_x+thickness, min_x)
+    spawnWall(layer, left-thickness, left-thickness, right+thickness, left)
     #East Wall
-    spawnWall(layer, max_x, min_x-thickness, max_x+thickness, max_y+thickness)
+    spawnWall(layer, right, left-thickness, right+thickness, top+thickness)
     #South Wall
-    spawnWall(layer, min_x-thickness, max_y, max_x+thickness, max_y+thickness)
+    spawnWall(layer, left-thickness, top, right+thickness, top+thickness)
     #West Wall
-    spawnWall(layer, min_x-thickness, min_x-thickness, min_x, max_y+thickness)
+    spawnWall(layer, left-thickness, left-thickness, left, top+thickness)
 
 class PhysicsSprite(arcade.Sprite):
     def __init__(self, pymunk_shape, filename):

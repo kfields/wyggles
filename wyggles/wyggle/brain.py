@@ -61,21 +61,21 @@ class WyggleBrain(Brain):
 
         sprite = self.sprite
         pos = sprite.position
-        min_x, min_y, max_x, max_y = sprite.left, sprite.bottom, sprite.right, sprite.top
-        w_min_x, w_min_y, w_max_x, w_max_y = world_min_x, world_min_y, world_max_x, world_max_y
+        left, bottom, right, top = sprite.left, sprite.bottom, sprite.right, sprite.top
+        w_left, w_bottom, w_right, w_top = world_left, world_bottom, world_right, world_top
 
-        if(min_x < w_min_x):
-            delta_x = w_min_x - min_x
+        if(left < w_left):
+            delta_x = w_left - left
             need_turn = True
-        elif(max_x > w_max_x):
-            delta_x = w_max_x - max_x
+        elif(right > w_right):
+            delta_x = w_right - right
             need_turn = True
 
-        if(min_y < w_min_y):
-            delta_y = w_min_y - min_y
+        if(bottom < w_bottom):
+            delta_y = w_bottom - bottom
             need_turn = True
-        elif(max_y > w_max_y):
-            delta_y = w_max_y - max_y
+        elif(top > w_top):
+            delta_y = w_top - top
             need_turn = True
 
         #TODO:use pymunk
@@ -90,8 +90,8 @@ class WyggleBrain(Brain):
             #self.randforward()
             self.project(self.sensor_range)
 
-        nextX = self.getX() + delta_x
-        nextY = self.getY() + delta_y
+        nextX = self.x + delta_x
+        nextY = self.y + delta_y
         #
         self.sprite.track[self.sprite.track_ndx * 2] = nextX
         self.sprite.track[self.sprite.track_ndx * 2 + 1] = nextY

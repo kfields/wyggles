@@ -11,12 +11,6 @@ class Brain:
         #self.sensor_range = 512
         self.sensor_range = 128
 
-    def getX(self):
-        return self.sprite.getX()
-
-    def getY(self):
-        return self.sprite.getY()
-
     @property
     def position(self):
         return self.sprite.position

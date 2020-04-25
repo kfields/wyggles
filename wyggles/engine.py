@@ -10,15 +10,15 @@ from .layer import Layer
 
 from wyggles.mathutils import *
 
-world_min_x = 0
-world_min_y = 0
-world_max_x = 1024
-world_max_y = 768
+world_left = 0
+world_bottom = 0
+world_right = 1024
+world_top = 768
 
 
 def materializeRandomFromCenter(sprite):
-    halfMaxX = world_max_x / 2
-    halfMaxY = world_max_x / 2
+    halfMaxX = world_right / 2
+    halfMaxY = world_right / 2
     diameter = 400
     radius = diameter / 2
     sprite.materialize_at(
