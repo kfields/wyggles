@@ -2,6 +2,7 @@ import math
 import random
 import arcade
 
+import wyggles.app
 from wyggles.mathutils import *
 from wyggles.engine import *
 import wyggles.app
@@ -23,21 +24,6 @@ class WyggleBrain(Brain):
 
     def change_state(self, state):
         self.state = state
-        print(self.sprite.name, state)
-
-    """
-    def update(self, delta_time):
-        super().update(delta_time)
-        if(self.at_goal()):
-            pt = random.randint(0, 3)
-            pd = random.randint(0, 359)
-            if(pt == 0):
-                self.left(pd)
-            elif(pt == 2):
-                self.right(pd)
-            self.randforward()
-        self.move()
-    """
 
     def update(self, delta_time: float = 1 / 60):
         super().update(delta_time)
@@ -50,6 +36,7 @@ class WyggleBrain(Brain):
             self.eat()
         elif state == "kicker":
             self.kick()
+        self.consider()
 
     def move(self):
         x, y = self.position
@@ -66,7 +53,7 @@ class WyggleBrain(Brain):
 
         self.try_move(delta)
 
-    """
+    
     def try_move(self, delta):
         delta_x, delta_y = delta
         next_x, next_y = 0, 0
@@ -75,8 +62,7 @@ class WyggleBrain(Brain):
         sprite = self.sprite
         pos = sprite.position
         min_x, min_y, max_x, max_y = sprite.left, sprite.bottom, sprite.right, sprite.top
-        border  = self.model.border
-        w_min_x, w_min_y, w_max_x, w_max_y = border[0], border[1], border[2], border[3]
+        w_min_x, w_min_y, w_max_x, w_max_y = world_min_x, world_min_y, world_max_x, world_max_y
 
         if(min_x < w_min_x):
             delta_x = w_min_x - min_x
@@ -93,59 +79,22 @@ class WyggleBrain(Brain):
             need_turn = True
 
         #TODO:use pymunk
-        
+        '''
         if not need_turn:
-            ground_layer = badwing.app.ground_layer
-            if ground_layer:
-                need_turn = collision_list = arcade.check_for_collision_with_list(self.sprite, ground_layer.sprites)
-
+            landscape_layer = wyggles.app.landscape_layer
+            if landscape_layer:
+                need_turn = len(arcade.check_for_collision_with_list(self.sprite, landscape_layer)) != 0
+        '''
         if(need_turn):
             self.right(45)
-            self.randforward()
-
-        pos = self.position
-        next_x = pos[0] + delta_x
-        next_y = pos[1] + delta_y                    
-        
-        self.position = (next_x, next_y)
-        sprite.change_x = pos[0] - next_x
-        sprite.change_y = pos[1] - next_y
-    """
-
-    def try_move(self, delta):
-        delta_x, delta_y = delta
-        nextX = 0
-        nextY = 0
-        need_turn = False
-        #
-        sprite = self.sprite
-        pos = sprite.position
-        min_x, min_y, max_x, max_y = sprite.left, sprite.bottom, sprite.right, sprite.top
-        #
-        if min_x < world_min_x:
-            delta_x = -min_x
-            need_turn = True
-        elif max_x > world_max_x:
-            delta_x = world_max_x - max_x
-            need_turn = True
-        #
-        if min_y < world_min_y:
-            delta_y = world_min_y - min_y
-            need_turn = True
-        elif max_y > world_max_y:
-            delta_y = world_max_y - max_y
-            need_turn = True
-        #
-        if need_turn:
-            self.right(180)
+            #self.randforward()
             self.project(self.sensor_range)
-        #
+
         nextX = self.getX() + delta_x
         nextY = self.getY() + delta_y
         #
         self.sprite.track[self.sprite.track_ndx * 2] = nextX
         self.sprite.track[self.sprite.track_ndx * 2 + 1] = nextY
-        #self._move()
         self.sprite._move()
 
     def left(self, angle):
@@ -189,13 +138,11 @@ class WyggleBrain(Brain):
                 pass
             self.project(self.sensor_range)
         self.move()
-        self.consider()
 
     def hunt(self):
         if self.sprite.intersects(self.focus):
             self.change_state("eater")
         self.move()
-        self.consider()
 
     def eat(self):
         self.sprite.stop()
@@ -203,6 +150,7 @@ class WyggleBrain(Brain):
             self.sprite.close_mouth()
             self.sprite.energy = self.sprite.energy + self.focus.energy
             self.change_state("wanderer")
+            self.focus = None
             self.sprite.go()
             # self.sprite.grow()
             return
@@ -227,7 +175,8 @@ class WyggleBrain(Brain):
         if distance2d(self.position, self.focus.position) < 32:
             self.focus.receive_kick(self.heading, self.sensor_range)
 
-        elif(distance2d(self.position, self.position) > self.sensor_range):
+        elif(distance2d(self.position, self.focus.position) > self.sensor_range):
+            self.focus = None
             self.change_state('wanderer') 
 
         self.move()
@@ -236,8 +185,9 @@ class WyggleBrain(Brain):
         if self.consider_timer > 0:
             self.consider_timer -= 1
             return
-        # else
-        self.consider_timer = self.consider_max
+        else:
+            self.consider_timer = self.consider_max
+
         beacons = sprite_engine.query(self.x, self.y, self.sensor_range)
         #
         state = self.state
@@ -255,9 +205,6 @@ class WyggleBrain(Brain):
             del beacons
 
     def considerEating(self, beacons):
-        if beacons == None:
-            return False
-        # else
         apple = None
         for beacon in beacons:
             if isinstance(beacon.sprite, Fruit):
@@ -273,9 +220,6 @@ class WyggleBrain(Brain):
         return True
 
     def considerKicking(self, beacons):
-        if beacons == None:
-            return False
-        # else
         ball = None
         for beacon in beacons:
             if beacon.type == "ball":

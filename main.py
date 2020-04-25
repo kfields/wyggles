@@ -5,6 +5,7 @@ import timeit
 import math
 import os
 
+import wyggles.app
 from wyggles.assets import asset
 from wyggles.engine import *
 from wyggles.wyggle import Wyggle
@@ -158,7 +159,7 @@ class MyGame(arcade.Window):
         self.layers.append(self.food_layer)
         spawnFood(self.food_layer)
 
-        self.landscape_layer = landscape_layer = arcade.tilemap.process_layer(my_map, 'landscape', TILE_SCALING)
+        wyggles.app.landscape_layer = self.landscape_layer = landscape_layer = arcade.tilemap.process_layer(my_map, 'landscape', TILE_SCALING)
         self.layers.append(landscape_layer)
         for sprite in landscape_layer:
             spawnObstacle(sprite)
@@ -196,6 +197,18 @@ class MyGame(arcade.Window):
         # Draw all the sprites
         for layer in self.layers:
             layer.draw()
+
+        for wyggle in self.wyggle_layer:
+            brain = wyggle.brain
+            if not brain:
+                continue
+            txt = brain.state
+            arcade.draw_text(txt, wyggle.x + 16, wyggle.y + 16, arcade.color.BLACK, 12)
+            focus = brain.focus
+            if not focus:
+                continue
+            arcade.draw_line(wyggle.x, wyggle.y, focus.x, focus.y, arcade.color.BLACK, 1)
+
 
         # Display timings
         output = f"Processing time: {self.processing_time:.3f}"
@@ -264,10 +277,6 @@ class MyGame(arcade.Window):
                 # Remove balls from physics list
                 sprite.remove_from_sprite_lists()
 
-        # Update physics
-        # Use a constant time step, don't use delta_time
-        # See "Game loop / moving time forward"
-        # http://www.pymunk.org/en/latest/overview.html#game-loop-moving-time-forward
         self.space.step(1 / 60.0)
 
         # If we are dragging an object, make sure it stays with the mouse. Otherwise

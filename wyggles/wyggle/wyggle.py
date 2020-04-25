@@ -141,3 +141,4 @@ class Wyggle(WyggleHead):
             was_butt.next = self.butt 
         else:
             self.next = self.butt 
+    

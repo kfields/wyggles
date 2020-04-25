@@ -68,9 +68,6 @@ class Sprite(arcade.Sprite):
         self.min_y = self.y - self.halfHeight
         self.max_x = self.x + self.halfWidth
         self.max_y = self.y + self.halfHeight
-        #
-        if(self.beacon != None):
-            self.beacon.set_pos(self.x, self.y)
 
     def set_origin(self, x, y):
         self.set_pos(x, y)

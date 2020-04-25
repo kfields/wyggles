@@ -2,6 +2,7 @@ import math
 import os
 import random
 import sys
+import copy
 
 import pymunk
 
@@ -48,15 +49,14 @@ class SpriteEngine:
         self.beacons.remove(beacon)
 
     def query(self, x, y, distance):
-        beacon = None
-        result = None
+        result = []
         for beacon in self.beacons:
             dist = distance2d((x, y), (beacon.x, beacon.y))
             if dist < distance:
-                if result == None:
-                    result = [beacon]
-                else:
-                    result.append(beacon)
+                b = copy.copy(beacon)
+                b.distance = dist
+                result.append(b)
+        result.sort(key=lambda x: x.distance)
         return result
 
     def gen_id(self, name):
