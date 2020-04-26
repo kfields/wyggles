@@ -1,7 +1,8 @@
 import math
 from .mathutils import *
+from botsley.run.agent import Agent
 
-class Brain:
+class Brain(Agent):
 
     def __init__(self, sprite):
         self.sprite = sprite

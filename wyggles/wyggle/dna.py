@@ -30,7 +30,7 @@ class WyggleDna(Dna):
         #
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
         ctx = cairo.Context(surface)
-        ctx.scale(1, 1)  # Normalizing the canvas
+        #ctx.scale(1, 1)  # Normalizing the canvas
 
         imgsize = (RADIUS, RADIUS) #The size of the image
 
@@ -71,13 +71,13 @@ class WyggleDna(Dna):
         self.draw_face(ctx)
         #Mouth
         x0 = 8
-        y0 = 22 - (4 * valence)
+        y0 = 20 - (4 * valence)
         x1 = 16
         y1 = 26 + (4 * valence)
         x2 = 24
         y2 = y0
         #
-        ctx.move_to(x0, y0)
+        #ctx.move_to(x0, y0)
         ctx.curve_to(x0, y0, x1, y1, x2, y2)
         ctx.set_line_width(2)
         ctx.set_source_rgb(255, 0, 0) #red

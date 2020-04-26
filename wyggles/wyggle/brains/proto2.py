@@ -9,6 +9,7 @@ class WyggleBrain(Brain):
                         async def fn(task, msg):
                             while True:
                                 self.move_to(sees.position)
+                                self.sleep()
                         a.use(fn)
                 with action() as a:
                     async def fn(task, msg):

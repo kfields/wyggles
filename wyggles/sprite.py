@@ -1,5 +1,4 @@
 import math
-import data
 import arcade
 import arcade
 

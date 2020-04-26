@@ -125,6 +125,7 @@ class MyGame(arcade.Window):
         self.respawning_food = False
         BG_WIDTH = 128
         BG_HEIGHT = 128
+
         '''
         #self.background = arcade.load_texture(asset('grass.png'))
         bg_path = ":resources:images/tiles/grassCenter.png"
@@ -135,17 +136,17 @@ class MyGame(arcade.Window):
         self.background.width = width
         self.background.height = height
         '''
-        my_map = arcade.tilemap.read_tmx(asset('level1.tmx'))
-
-        self.layers.append(arcade.tilemap.process_layer(my_map, 'ground', TILE_SCALING))
-
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(file_path)
-
         arcade.set_background_color(arcade.color.DARK_SLATE_GRAY)
 
         # -- Pymunk
         self.space = sprite_engine.space
+
+        my_map = arcade.tilemap.read_tmx(asset('level1.tmx'))
+
+        self.layers.append(arcade.tilemap.process_layer(my_map, 'ground', TILE_SCALING))
+
+        self.layers.append(arcade.tilemap.process_layer(my_map, 'enemy', TILE_SCALING))
+
 
         self.wyggle_layer = Layer('wyggles')
         self.layers.append(self.wyggle_layer)

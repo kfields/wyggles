@@ -8,7 +8,9 @@ from wyggles.sprite import Sprite
 from wyggles.engine import *
 from wyggles.beacon import *
 from .dna import WyggleDna
-from .brain import WyggleBrain
+
+from .brains.default import DefaultWyggleBrain
+BRAIN = DefaultWyggleBrain
 
 PI = math.pi
 RADIUS = 32
@@ -43,12 +45,15 @@ class WyggleSeg(Sprite):
             self.move()
         super().on_update(delta_time)
 
+    def move_to(self, position):
+        self.track[self.track_ndx * 2] = position[0]
+        self.track[self.track_ndx * 2 + 1] = position[1]
+        self.move()
+
     def move(self):
         if self.stopped:
             return
-        self._move()
-
-    def _move(self):
+        
         self.set_pos(self.track[self.track_ndx*2], self.track[self.track_ndx*2+1])    
         self.track_ndx += 1
         if(self.track_ndx >= self.track_max):
@@ -93,7 +98,7 @@ class Wyggle(WyggleHead):
     def __init__(self, layer):
         super().__init__(layer, WyggleDna(Wyggle))
         self.name = sprite_engine.gen_id(self.kind)
-        self.brain = WyggleBrain(self)
+        self.brain = BRAIN(self)
         self.length_max = 6
         self.segs = []
         self.pre_load()
