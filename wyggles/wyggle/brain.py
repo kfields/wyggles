@@ -15,6 +15,15 @@ class WyggleBrain(Brain):
         self.heading = random.randint(0, 359)
         self.wheel = 0
         self.focus = None
+        self.state = "wanderer"
+        self.consider_max = 10
+        self.consider_timer = self.consider_max
+        #
+        self.munch_timer = 10
+
+    def reset(self):
+        self.state = ''
+        self.focus = None
 
     def update(self, delta_time: float = 1 / 60):
         super().update(delta_time)

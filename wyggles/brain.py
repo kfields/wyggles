@@ -5,6 +5,7 @@ from botsley.run.agent import Agent
 class Brain(Agent):
 
     def __init__(self, sprite):
+        super().__init__()
         self.sprite = sprite
 
         self.begin_pos = (0, 0)

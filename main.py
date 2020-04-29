@@ -5,6 +5,8 @@ import timeit
 import math
 import os
 
+from botsley.run.task import runner
+
 import wyggles.app
 from wyggles.assets import asset
 from wyggles.engine import *
@@ -27,9 +29,11 @@ SCREEN_WIDTH = world_right
 SCREEN_HEIGHT = world_top
 SCREEN_TITLE = "Wyggles"
 
-WYGGLE_COUNT = 3
+#WYGGLE_COUNT = 3
+WYGGLE_COUNT = 1
 
 MAX_FOOD = 3
+#MAX_FOOD = 10
 
 def spawnWyggle(layer):
     wyggle = Wyggle(layer)
@@ -306,6 +310,16 @@ MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
 class MyEventLoop(pyglet.app.EventLoop):
     pass
+    '''
+    def idle(self):
+        runner.step()
+        return super().idle()
+    '''
+
+def step_runner(delta_time):
+    runner.step()
+
+pyglet.clock.schedule_interval(step_runner, .25)
 
 pyglet.app.event_loop = event_loop = MyEventLoop()
 

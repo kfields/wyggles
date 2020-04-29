@@ -10,7 +10,9 @@ from wyggles.beacon import *
 from .dna import WyggleDna
 
 from .brains.default import DefaultWyggleBrain
-BRAIN = DefaultWyggleBrain
+#BRAIN = DefaultWyggleBrain
+from .brains.proto import ProtoBrain
+BRAIN = ProtoBrain
 
 PI = math.pi
 RADIUS = 32
@@ -22,48 +24,29 @@ class WyggleSeg(Sprite):
         super().__init__(layer)
         self.dna = dna
         self.next = None
-        self.track_ndx = 0
-        #self.track_max = 132
-        self.track_max = 256
-        self.onTrack = False
         self.track = None
-        self.stopped = False
-
-    def stop(self):
-        self.stopped = True
-
-    def go(self):
-        self.stopped = False
+        self.track_ndx = 0
+        self.track_max = 256
+        self.on_track = False
 
     def put_on_track(self, track):
         self.track = track
-        self.onTrack = True
+        self.on_track = True
         self.materialize_at(track[self.track_ndx*2], track[self.track_ndx*2+1])
 
     def on_update(self, delta_time: float = 1/60):
-        if self.onTrack:
-            self.move()
         super().on_update(delta_time)
 
-    def move_to(self, position):
-        self.track[self.track_ndx * 2] = position[0]
-        self.track[self.track_ndx * 2 + 1] = position[1]
-        self.move()
-
     def move(self):
-        if self.stopped:
-            return
-        
+
         self.set_pos(self.track[self.track_ndx*2], self.track[self.track_ndx*2+1])    
         self.track_ndx += 1
-        if(self.track_ndx >= self.track_max):
+        if self.track_ndx >= self.track_max:
             self.track_ndx = 0
-        if(self.next == None):
-            return #early out.
+
         #else if there is a next segment and not on the track yet...
-        if(self.track_ndx > 16):
+        if(self.next and self.track_ndx > 16):
               self.next.put_on_track(self.track)
-        return True
 
 
 class WyggleTail(WyggleSeg):
@@ -76,6 +59,14 @@ class WyggleHead(WyggleSeg):
     def __init__(self, layer, dna):
         super().__init__(layer, dna)
         self.face = 'happy'
+
+    def move_to(self, position):
+        self.track[self.track_ndx * 2] = position[0]
+        self.track[self.track_ndx * 2 + 1] = position[1]
+        self.move()
+        for seg in self.segs:
+            if seg.on_track:
+                seg.move()
 
     def happy_face(self):
         self.face = 'happy'
@@ -101,42 +92,22 @@ class Wyggle(WyggleHead):
         self.brain = BRAIN(self)
         self.length_max = 6
         self.segs = []
-        self.pre_load()
         self.texture = self.dna.happy_face_texture
 
         self.track = [0] * self.track_max*2
         self.length = 1
         self.butt = None
 
-        self.grow()
-        self.grow()
-        self.grow()
-        self.grow()
-        self.grow()
-        #
-
-    def stop(self):
-        super().stop()
-        for seg in self.segs:
-            seg.stop()
-
-    def go(self):
-        super().go()
-        for seg in self.segs:
-            seg.go()
-
-    def pre_load(self):
-        pass
+        for i in range(self.length_max-1):
+            self.grow()
 
     def grow(self):
         length = len(self.segs)
-        if(length == self.length_max):
+        if(length >= self.length_max):
             return
         seg = WyggleTail(self.layer, self.dna)
         self.segs.append(seg)
-        length = len(self.segs)
-        self.length = length
-        #seg.z = -length
+        self.length = length = len(self.segs)
         seg.z = -.001 * length
         
         was_butt = self.butt

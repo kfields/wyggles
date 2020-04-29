@@ -18,8 +18,8 @@ world_top = 768
 
 def materializeRandomFromCenter(sprite):
     halfMaxX = world_right / 2
-    halfMaxY = world_right / 2
-    diameter = 400
+    halfMaxY = world_top / 2
+    diameter = world_top
     radius = diameter / 2
     sprite.materialize_at(
         (halfMaxX - radius) + (random.random() * diameter),

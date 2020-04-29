@@ -26,8 +26,7 @@ class Ball(Sprite):
         sprite_engine.space.add(body, shape)
         self.body = body
 
-    def receive_kick(self, angle, distance):
-        strength = 20
+    def receive_kick(self, angle, strength = 20):
         px = (math.cos(angle*degRads))*strength
         py = (math.sin(angle*degRads))*strength
         self.body.apply_impulse_at_local_point( (px, py), (0, 0) )

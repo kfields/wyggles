@@ -12,14 +12,6 @@ from wyggles.fruit import Fruit
 class DefaultWyggleBrain(WyggleBrain):
     def __init__(self, sprite):
         super().__init__(sprite)
-        self.state = "wanderer"
-        self.consider_max = 10
-        self.consider_timer = self.consider_max
-        #
-        self.munch_timer = 10
-
-    def change_state(self, state):
-        self.state = state
 
     def update(self, delta_time: float = 1 / 60):
         super().update(delta_time)
@@ -49,17 +41,15 @@ class DefaultWyggleBrain(WyggleBrain):
 
     def hunt(self):
         if self.sprite.intersects(self.focus):
-            self.change_state("eater")
+            self.state = "eater"
         self.move()
 
     def eat(self):
-        self.sprite.stop()
         if self.focus.is_munched():
             self.sprite.close_mouth()
             self.sprite.energy = self.sprite.energy + self.focus.energy
-            self.change_state("wanderer")
+            self.state = "wanderer"
             self.focus = None
-            self.sprite.go()
             # self.sprite.grow()
             return
         # else
@@ -85,7 +75,7 @@ class DefaultWyggleBrain(WyggleBrain):
 
         elif(distance2d(self.position, self.focus.position) > self.sensor_range):
             self.focus = None
-            self.change_state('wanderer') 
+            self.state = 'wanderer'
 
         self.move()
 
@@ -124,7 +114,7 @@ class DefaultWyggleBrain(WyggleBrain):
         # else
         self.focus = apple
         self.move_to(apple.position)
-        self.change_state("hunter")
+        self.state = "hunter"
         return True
 
     def considerKicking(self, beacons):
@@ -139,5 +129,5 @@ class DefaultWyggleBrain(WyggleBrain):
         # else
         self.focus = ball
         self.move_to(ball.position)
-        self.change_state("kicker")
+        self.state = "kicker"
         return True
