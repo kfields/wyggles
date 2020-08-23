@@ -1,3 +1,4 @@
-arcade==2.3.15
+arcade==2.4.1
 pycairo==1.19.1
 pymunk==5.6.0
+-e git+git://github.com/kfields/botsley@master#egg=botsley

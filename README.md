@@ -1,4 +1,4 @@
-# Wyggles Arcade
+# Wyggles :bug:
 
 ## Install
 
@@ -12,11 +12,11 @@ Navigate to a directory where you keep your software projects
 
 Clone the repository
 
-        git clone https://github.com/kfields/wyggles-arcade.git
+        git clone https://github.com/kfields/wyggles.git
         
 Change to the new directory which contains the repository
 
-        cd wyggles-arcade
+        cd wyggles
 
 Create a Python 3 virtual environment called `env`
 

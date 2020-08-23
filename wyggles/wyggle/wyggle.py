@@ -9,10 +9,10 @@ from wyggles.engine import *
 from wyggles.beacon import *
 from .dna import WyggleDna
 
-from .brains.default import DefaultWyggleBrain
-#BRAIN = DefaultWyggleBrain
-from .brains.proto import ProtoBrain
-BRAIN = ProtoBrain
+#from .brains.default import DefaultWyggleBrain as MyBrain
+#from .brains.behavior import BehaviorBrain as MyBrain
+#from .brains.neuron import NeuronBrain as MyBrain
+from .brains.reactive import ReactiveBrain as MyBrain
 
 PI = math.pi
 RADIUS = 32
@@ -89,7 +89,7 @@ class Wyggle(WyggleHead):
     def __init__(self, layer):
         super().__init__(layer, WyggleDna(Wyggle))
         self.name = sprite_engine.gen_id(self.kind)
-        self.brain = BRAIN(self)
+        self.brain = MyBrain(self)
         self.length_max = 6
         self.segs = []
         self.texture = self.dna.happy_face_texture

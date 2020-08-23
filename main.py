@@ -29,11 +29,11 @@ SCREEN_WIDTH = world_right
 SCREEN_HEIGHT = world_top
 SCREEN_TITLE = "Wyggles"
 
-#WYGGLE_COUNT = 3
-WYGGLE_COUNT = 1
+WYGGLE_COUNT = 3
+# WYGGLE_COUNT = 1
 
 MAX_FOOD = 3
-#MAX_FOOD = 10
+# MAX_FOOD = 10
 
 def spawnWyggle(layer):
     wyggle = Wyggle(layer)

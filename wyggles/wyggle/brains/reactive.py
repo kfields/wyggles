@@ -10,26 +10,43 @@ from wyggles.fruit import Fruit
 from wyggles.ball import Ball
 
 _see = term_('see')
+_x = var_("x")
 
-class SeesFood(Condition):
+class Sees(Action):
+    def __init__(self):
+        super().__init__()
+
+    async def main(self, msg):
+        while self.ok:
+            beacons = sprite_engine.query(self.bot.x, self.bot.y, self.bot.sensor_range)
+            for beacon in beacons:
+                self.post(Assert(Believe(_I, _see, beacon.sprite)))
+            await self.sleep()
+
+class SeesFood(Neuron):
     def __init__(self):
         super().__init__()
         self.focus = None
+        self.rule = None
 
-    async def main(self, msg):
-        print('SeesFood')
+    def activate(self):
+        t = Trigger(Assert, Believe, _I, _see, _x)
+        async def action(task, msg):
+            print("Match:", msg.data.obj)
+
+        self.rule = bot.subscribe(t, action)
+
+    def main(self):
+        print('Sees Food')
         beacons = sprite_engine.query(self.bot.x, self.bot.y, self.bot.sensor_range)
-        food = None
+        self.focus = None
         for beacon in beacons:
             if isinstance(beacon.sprite, Fruit):
-                food = beacon.sprite
+                self.focus = beacon.sprite
                 break
-        if food:
-            self.focus = food
-            self.post(Assert(Believe(_I, _see, food)))
-            await super().main(msg)
         else:
-            self.fail()
+            return 0
+        return 1
 
 class MoveTo(Action):
     def __init__(self, sees):
@@ -38,12 +55,12 @@ class MoveTo(Action):
 
     async def main(self, msg):
         self.bot.focus = focus = self.sees.focus
-        self.bot.move_to(focus.position)
         self.bot.state = 'move_to'
-        while self.check():
+        while self.ok():
             if self.bot.sprite.intersects(focus):
                 self.bot.state = ''
                 return self.succeed()
+            self.bot.move_to(focus.position)
             await self.sleep()
 
 class Eat(Action):
@@ -55,7 +72,7 @@ class Eat(Action):
         self.bot.focus = focus = self.sees.focus
         self.bot.state = 'eat'
         
-        while self.check():
+        while self.ok():
             if focus.is_munched():
                 sprite = self.bot.sprite
                 sprite.close_mouth()
@@ -64,25 +81,22 @@ class Eat(Action):
                 return self.succeed()
             await self.sleep()
 
-class SeesBall(Condition):
+class SeesBall(Neuron):
     def __init__(self):
         super().__init__()
         self.focus = None
 
-    async def main(self, msg):
-        print('SeesBall')
+    def main(self):
+        print('Sees Ball', self.bot.x, self.bot.y)
         beacons = sprite_engine.query(self.bot.x, self.bot.y, self.bot.sensor_range)
-        ball = None
+        self.focus = None
         for beacon in beacons:
             if isinstance(beacon.sprite, Ball):
-                ball = beacon.sprite
+                self.focus = beacon.sprite
                 break
-        if ball:
-            self.focus = ball
-            self.post(Assert(Believe(_I, _see, ball)))
-            await super().main(msg)
         else:
-            self.fail()
+            return 0
+        return 1
 
 class Kick(Action):
     def __init__(self, sees):
@@ -98,31 +112,32 @@ class Kick(Action):
 class Wander(Action):
     async def main(self, msg):
         self.bot.state = 'wander'
-        while self.check():
+        while self.ok():
             await self.sleep()
             return self.fail()
 
-class ProtoBrain(WyggleBrain):
+class ReactiveBrain(WyggleBrain):
     def __init__(self, model):
         super().__init__(model)
         with root(self):
-            with selector():
-                with condition(SeesFood()) as sees_food:
-                    with sequence():
-                        with action(MoveTo(sees_food)):
-                            pass
-                        with action(Eat(sees_food)):
-                            pass
-                
-                with condition(SeesBall()) as sees_ball:
-                    with sequence():
-                        with action(MoveTo(sees_ball)):
-                            pass
-                        with action(Kick(sees_ball)):
-                            pass
+            with forever():
+                with utility():
+                    with neuron(SeesFood()) as sees_food:
+                        with sequence():
+                            with action(MoveTo(sees_food)):
+                                pass
+                            with action(Eat(sees_food)):
+                                pass
+                    
+                    with neuron(SeesBall()) as sees_ball:
+                        with sequence():
+                            with action(MoveTo(sees_ball)):
+                                pass
+                            with action(Kick(sees_ball)):
+                                pass
 
-                with action(Wander()):
-                    pass
+                    with action(Wander()):
+                        pass
 
     def update(self, delta_time: float = 1 / 60):
         super().update(delta_time)
@@ -144,8 +159,6 @@ class ProtoBrain(WyggleBrain):
                 self.left(pd)
             elif pt == 2:
                 self.right(pd)
-            else:
-                pass
             self.project(self.sensor_range)
         self.move()
 
