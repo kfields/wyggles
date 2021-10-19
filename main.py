@@ -72,7 +72,7 @@ def spawnObstacle(sprite):
     shape = pymunk.Poly(body, sprite.hit_box)
     shape.elasticity = .5
     shape.friction = .9
-    sprite_engine.space.add(shape)
+    sprite_engine.space.add(body, shape)
     #layer.append(shape)
 
 #Walls
@@ -82,7 +82,7 @@ def spawnWall(layer, x, y, w, z):
     shape = pymunk.Poly.create_box(body, (w-x, z-y))
     shape.elasticity = .5
     shape.friction = .9
-    sprite_engine.space.add(shape)
+    sprite_engine.space.add(body, shape)
     #layer.append(shape)
 
 def spawnWalls(layer):
@@ -130,26 +130,14 @@ class MyGame(arcade.Window):
         BG_WIDTH = 128
         BG_HEIGHT = 128
 
-        '''
-        #self.background = arcade.load_texture(asset('grass.png'))
-        bg_path = ":resources:images/tiles/grassCenter.png"
-        #bg_path = asset('grass.png')
-        self.background = arcade.Sprite(bg_path, TILE_SCALING,
-                                         repeat_count_x=width/BG_WIDTH, repeat_count_y=height/BG_HEIGHT)
-        self.background.position = (width/2, height/2)
-        self.background.width = width
-        self.background.height = height
-        '''
-        arcade.set_background_color(arcade.color.DARK_SLATE_GRAY)
-
         # -- Pymunk
         self.space = sprite_engine.space
 
-        my_map = arcade.tilemap.read_tmx(asset('level1.tmx'))
+        my_map = arcade.tilemap.load_tilemap(asset('level1.json'))
 
-        self.layers.append(arcade.tilemap.process_layer(my_map, 'ground', TILE_SCALING))
+        self.layers.append(my_map.sprite_lists['ground'])
 
-        self.layers.append(arcade.tilemap.process_layer(my_map, 'enemy', TILE_SCALING))
+        self.layers.append(my_map.sprite_lists['enemy'])
 
 
         self.wyggle_layer = Layer('wyggles')
@@ -164,7 +152,7 @@ class MyGame(arcade.Window):
         self.layers.append(self.food_layer)
         spawnFood(self.food_layer)
 
-        wyggles.app.landscape_layer = self.landscape_layer = landscape_layer = arcade.tilemap.process_layer(my_map, 'landscape', TILE_SCALING)
+        wyggles.app.landscape_layer = self.landscape_layer = landscape_layer = my_map.sprite_lists['landscape']
         self.layers.append(landscape_layer)
         for sprite in landscape_layer:
             spawnObstacle(sprite)

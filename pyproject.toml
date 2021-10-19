@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "wyggles"
+version = "0.1.0"
+description = ""
+authors = ["Kurtis Fields <kurtisfields@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+arcade = "^2.6.3"
+pycairo = "^1.20.1"
+botsley = {path = "./botsley", develop = true}
+numpy = "^1.21.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

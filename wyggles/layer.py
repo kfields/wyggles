@@ -20,13 +20,16 @@ class Layer(arcade.SpriteList):
             
     def add_sprite(self, sprite):
         self.append(sprite)
-        #self.depth_sort()
         
     def remove_sprite(self, sprite):
         self.remove(sprite)
-        
+
     def depth_sort(self):
-        self.sprite_list.sort(key=operator.attrgetter('z'))
-        # Rebuild index list
-        for idx, sprite in enumerate(self.sprite_list):
-            self.sprite_idx[sprite] = idx
+        sprite_list = self.sprite_list
+        has_swapped = True
+        while(has_swapped):
+            has_swapped = False
+            for i in range(len(sprite_list) - 1):
+                if sprite_list[i].z > sprite_list[i+1].z:
+                    self.swap(i, i+1)
+                    has_swapped = True
