@@ -1,0 +1,3 @@
+[submodule "botsley"]
+	path = botsley
+	url = https://github.com/kfields/botsley
