@@ -9,7 +9,7 @@ python = ">=3.9,<3.11"
 arcade = "^2.6.3"
 pycairo = "^1.20.1"
 botsley = {path = "./botsley", develop = true}
-numpy = "^1.21.2"
+numpy = "^1.22.0"
 
 [tool.poetry.dev-dependencies]
 
